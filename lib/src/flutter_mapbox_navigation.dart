@@ -15,20 +15,23 @@ class MapBoxNavigation {
   static MapBoxNavigation get instance => _instance;
 
   MapBoxOptions _defaultOptions = MapBoxOptions(
+    tilt: 60,
     zoom: 15,
-    tilt: 0,
     bearing: 0,
+    language: 'fr',
+    isOptimized: false,
+    alternatives: false,
     enableRefresh: false,
-    alternatives: true,
-    voiceInstructionsEnabled: true,
-    bannerInstructionsEnabled: true,
-    allowsUTurnAtWayPoints: true,
-    mode: MapBoxNavigationMode.drivingWithTraffic,
-    units: VoiceUnits.imperial,
     simulateRoute: false,
-    animateBuildRoute: true,
-    longPressDestinationEnabled: true,
-    language: 'en',
+    animateBuildRoute: false,
+    units: VoiceUnits.metric,
+    allowsUTurnAtWayPoints: false,
+    showEndOfRouteFeedback: false,
+    voiceInstructionsEnabled: true,
+    showReportFeedbackButton: false,
+    bannerInstructionsEnabled: true,
+    longPressDestinationEnabled: false,
+    mode: MapBoxNavigationMode.walking,
   );
 
   /// setter to set default options
