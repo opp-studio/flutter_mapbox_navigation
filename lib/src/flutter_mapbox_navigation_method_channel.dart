@@ -117,7 +117,10 @@ class MethodChannelFlutterMapboxNavigation
   Stream<RouteEvent>? get routeEventsListener {
     return eventChannel
         .receiveBroadcastStream()
-        .map((dynamic event) => _parseRouteEvent(event as String));
+        .map((dynamic event) => event != null
+              ? _parseRouteEvent(event as String)
+              : RouteEvent(eventType: MapBoxEvent.milestone_event),
+            );
   }
 
   void _onProgressData(RouteEvent event) {
