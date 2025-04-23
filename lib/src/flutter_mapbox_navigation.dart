@@ -15,7 +15,7 @@ class MapBoxNavigation {
   static MapBoxNavigation get instance => _instance;
 
   MapBoxOptions _defaultOptions = MapBoxOptions(
-    tilt: 60,
+    tilt: 20,
     zoom: 15,
     bearing: 0,
     language: 'fr',
