@@ -1,3 +1,15 @@
+## 0.2.3
+* Updated to NDK 27.0.12077973 for 16KB page size support
+* Updated to Mapbox Navigation SDK 2.21.0 with NDK 27 variants
+* Updated to Mapbox Maps SDK 11.7.0 with NDK 27 support
+* Updated Java compatibility to version 17
+* Updated Kotlin to 1.9.22
+* Updated Android Gradle Plugin to 8.1.4
+* Updated compileSdkVersion and targetSdkVersion to 34
+* Added proper MAPBOX_DOWNLOADS_TOKEN validation
+* Optimized dependencies for 16KB memory page size compatibility
+* Added support for Google Play's 16KB memory page size requirements
+
 ## 0.2.2
 * Fix issue with voice units in Android
 * Fix BannerText, VoiceInstruction and Off Route Events
