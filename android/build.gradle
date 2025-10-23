@@ -24,7 +24,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.4'
+        classpath 'com.android.tools.build:gradle:8.9.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -55,7 +55,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 35
+    compileSdkVersion 36
     ndkVersion "28.0.12433566"
 
     compileOptions {
@@ -73,12 +73,30 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 36
+        
+        // Enable 16KB page size support
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+            }
+        }
     }
-
+    
+    buildFeatures {
+        dataBinding false
+        viewBinding false
+    }
+    
     lintOptions {
         disable 'InvalidPackage'
         checkReleaseBuilds false
+    }
+    
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
     
     namespace 'com.eopeter.flutter_mapbox_navigation'
@@ -87,11 +105,19 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     
-    // Mapbox Navigation SDK and Maps SDK with NDK 28 support for 16 KB page size
-    implementation 'com.mapbox.navigation:android-ndk28:2.22.0'
-    implementation 'com.mapbox.navigation:ui-dropin-ndk28:2.22.0'
-    implementation 'com.mapbox.navigation:ui-maps-ndk28:2.22.0'
-    implementation 'com.mapbox.maps:android-ndk28:11.10.0'
+    // Mapbox Navigation SDK and Maps SDK with NDK 27 support for 16 KB page size
+    implementation('com.mapbox.navigation:android-ndk27:2.21.0') {
+        exclude group: 'com.mapbox.common', module: 'okhttp-ndk27'
+    }
+    implementation('com.mapbox.navigation:ui-dropin-ndk27:2.21.0') {
+        exclude group: 'com.mapbox.common', module: 'okhttp-ndk27'
+    }
+    implementation('com.mapbox.navigation:ui-maps-ndk27:2.21.0') {
+        exclude group: 'com.mapbox.common', module: 'okhttp-ndk27'
+    }
+    implementation('com.mapbox.maps:android-ndk27:11.14.2') {
+        exclude group: 'com.mapbox.common', module: 'okhttp-ndk27'
+    }
     
     // AndroidX dependencies
     implementation 'androidx.core:core-ktx:1.12.0'

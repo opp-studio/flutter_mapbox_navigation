@@ -11,7 +11,7 @@ import org.json.JSONObject
 import androidx.appcompat.app.AppCompatActivity
 import com.eopeter.fluttermapboxnavigation.FlutterMapboxNavigationPlugin
 import com.eopeter.fluttermapboxnavigation.R
-import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
+import com.mapbox.navigation.dropin.NavigationView
 import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
@@ -85,10 +85,10 @@ class NavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
-        binding = NavigationActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.navigationView.addListener(navigationStateListener)
-        binding.navigationView.registerMapObserver(onMapClick)
+        setContentView(R.layout.navigation_activity)
+        navigationView = findViewById(R.id.navigationView)
+        navigationView.addListener(navigationStateListener)
+        navigationView.registerMapObserver(onMapClick)
         accessToken =
             PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
 
@@ -101,18 +101,18 @@ class NavigationActivity : AppCompatActivity() {
             .attach(this)
 
         if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
-            binding.navigationView.registerMapObserver(onMapLongClick)
-            binding.navigationView.customizeViewOptions {
+            navigationView.registerMapObserver(onMapLongClick)
+            navigationView.customizeViewOptions {
                 enableMapLongClickIntercept = false
             }
         }
 
         if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
-            binding.navigationView.registerMapObserver(onMapClick)
+            navigationView.registerMapObserver(onMapClick)
         }
         val act = this
         // Add custom view binders
-        binding.navigationView.customizeViewBinders {
+        navigationView.customizeViewBinders {
             infoPanelEndNavigationButtonBinder =
                 CustomInfoPanelEndNavButtonBinder(act)
         }
@@ -163,17 +163,17 @@ class NavigationActivity : AppCompatActivity() {
         if (styleUrlDay == null) styleUrlDay = Style.MAPBOX_STREETS
         if (styleUrlNight == null) styleUrlNight = Style.DARK
         // set map style
-        binding.navigationView.customizeViewStyles {}
+        navigationView.customizeViewStyles {}
 
         // set map style
-        binding.navigationView.customizeViewOptions {
+        navigationView.customizeViewOptions {
             mapStyleUriDay = styleUrlDay
             mapStyleUriNight = styleUrlNight
         }
 
         if (FlutterMapboxNavigationPlugin.enableFreeDriveMode) {
-            binding.navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
-            binding.navigationView.api.startFreeDrive()
+            navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
+            navigationView.api.startFreeDrive()
             return
         }
 
@@ -187,12 +187,12 @@ class NavigationActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
-            binding.navigationView.unregisterMapObserver(onMapLongClick)
+            navigationView.unregisterMapObserver(onMapLongClick)
         }
         if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
-            binding.navigationView.unregisterMapObserver(onMapClick)
+            navigationView.unregisterMapObserver(onMapClick)
         }
-        binding.navigationView.removeListener(navigationStateListener)
+        navigationView.removeListener(navigationStateListener)
 
         MapboxNavigationApp.current()?.unregisterBannerInstructionsObserver(this.bannerInstructionObserver)
         MapboxNavigationApp.current()?.unregisterVoiceInstructionsObserver(this.voiceInstructionObserver)
@@ -248,8 +248,8 @@ class NavigationActivity : AppCompatActivity() {
                         sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
                         return
                     }
-                    binding.navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
-                    binding.navigationView.api.startActiveGuidance(routes)
+                    navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
+                    navigationView.api.startActiveGuidance(routes)
                 }
             }
         )
@@ -301,8 +301,8 @@ class NavigationActivity : AppCompatActivity() {
                         MapBoxEvents.ROUTE_BUILT,
                         Gson().toJson(routes.map { it.directionsRoute.toJson() })
                     )
-                    binding.navigationView.api.routeReplayEnabled(true)
-                    binding.navigationView.api.startActiveGuidance(routes)
+                    navigationView.api.routeReplayEnabled(true)
+                    navigationView.api.startActiveGuidance(routes)
                 }
 
                 override fun onFailure(
@@ -346,9 +346,9 @@ class NavigationActivity : AppCompatActivity() {
 
 
     /**
-     * Bindings to the Navigation Activity.
+     * Navigation view reference.
      */
-    private lateinit var binding: NavigationActivityBinding// MapboxActivityTurnByTurnExperienceBinding
+    private lateinit var navigationView: NavigationView
 
 
     /**

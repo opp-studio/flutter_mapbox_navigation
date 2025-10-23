@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import com.eopeter.fluttermapboxnavigation.TurnByTurn
-import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
+import com.mapbox.navigation.dropin.NavigationView
 import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.mapbox.geojson.Point
@@ -21,12 +21,12 @@ import org.json.JSONObject
 class EmbeddedNavigationMapView(
     context: Context,
     activity: Activity,
-    binding: NavigationActivityBinding,
+    navigationView: NavigationView,
     binaryMessenger: BinaryMessenger,
     vId: Int,
     args: Any?,
     accessToken: String
-) : PlatformView, TurnByTurn(context, activity, binding, accessToken) {
+) : PlatformView, TurnByTurn(context, activity, navigationView, accessToken) {
     private val viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
     private val arguments = args as Map<*, *>
@@ -42,23 +42,23 @@ class EmbeddedNavigationMapView(
         initNavigation()
 
         if(!(this.arguments?.get("longPressDestinationEnabled") as Boolean)) {
-            this.binding.navigationView.customizeViewOptions {
+            this.navigationView.customizeViewOptions {
                 enableMapLongClickIntercept = false;
             }
         }
 
         if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
-            this.binding.navigationView.registerMapObserver(onMapClick)
+            this.navigationView.registerMapObserver(onMapClick)
         }
     }
 
     override fun getView(): View {
-        return binding.root
+        return navigationView
     }
 
     override fun dispose() {
         if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
-            this.binding.navigationView.unregisterMapObserver(onMapClick)
+            this.navigationView.unregisterMapObserver(onMapClick)
         }
         unregisterObservers()
     }

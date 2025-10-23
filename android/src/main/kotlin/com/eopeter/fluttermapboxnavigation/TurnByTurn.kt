@@ -8,7 +8,7 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
-import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
+import com.mapbox.navigation.dropin.NavigationView
 import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
@@ -41,7 +41,7 @@ import java.util.*
 open class TurnByTurn(
     ctx: Context,
     act: Activity,
-    bind: NavigationActivityBinding,
+    navigationView: NavigationView,
     accessToken: String
 ) : MethodChannel.MethodCallHandler,
     EventChannel.StreamHandler,
@@ -144,11 +144,11 @@ open class TurnByTurn(
                         MapBoxEvents.ROUTE_BUILT,
                         Gson().toJson(routes.map { it.directionsRoute.toJson() })
                     )
-                    this@TurnByTurn.binding.navigationView.api.routeReplayEnabled(
+                    this@TurnByTurn.navigationView.api.routeReplayEnabled(
                         this@TurnByTurn.simulateRoute
                     )
-                    this@TurnByTurn.binding.navigationView.api.startRoutePreview(routes)
-                    this@TurnByTurn.binding.navigationView.customizeViewBinders {
+                    this@TurnByTurn.navigationView.api.startRoutePreview(routes)
+                    this@TurnByTurn.navigationView.customizeViewBinders {
                         this.infoPanelEndNavigationButtonBinder =
                             CustomInfoPanelEndNavButtonBinder(activity)
                     }
@@ -179,7 +179,7 @@ open class TurnByTurn(
     }
 
     private fun startFreeDrive() {
-        this.binding.navigationView.api.startFreeDrive()
+        this.navigationView.api.startFreeDrive()
     }
 
     private fun startNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -213,7 +213,7 @@ open class TurnByTurn(
             PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
             return
         }
-        this.binding.navigationView.api.startActiveGuidance(this.currentRoutes!!)
+        this.navigationView.api.startActiveGuidance(this.currentRoutes!!)
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_RUNNING)
     }
 
@@ -260,7 +260,7 @@ open class TurnByTurn(
         if (this.mapStyleUrlDay == null) this.mapStyleUrlDay = Style.MAPBOX_STREETS
         if (this.mapStyleUrlNight == null) this.mapStyleUrlNight = Style.DARK
 
-        this@TurnByTurn.binding.navigationView.customizeViewOptions {
+        this@TurnByTurn.navigationView.customizeViewOptions {
             mapStyleUriDay = this@TurnByTurn.mapStyleUrlDay
             mapStyleUriNight = this@TurnByTurn.mapStyleUrlNight
         }           
@@ -394,9 +394,9 @@ open class TurnByTurn(
     private var isNavigationCanceled = false
 
     /**
-     * Bindings to the example layout.
+     * Navigation view reference.
      */
-    open val binding: NavigationActivityBinding = bind
+    open val navigationView: NavigationView = navigationView
 
     /**
      * Gets notified with location updates.

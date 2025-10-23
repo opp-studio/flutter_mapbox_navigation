@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import com.eopeter.fluttermapboxnavigation.R
-import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
+import com.mapbox.navigation.dropin.NavigationView
 import com.eopeter.fluttermapboxnavigation.models.views.EmbeddedNavigationMapView
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import io.flutter.plugin.common.BinaryMessenger
@@ -18,22 +18,23 @@ class EmbeddedNavigationViewFactory(
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val inflater = LayoutInflater.from(context)
-        val binding = NavigationActivityBinding.inflate(inflater)
+        val view = inflater.inflate(R.layout.navigation_activity, null)
+        val navigationView = view.findViewById<NavigationView>(R.id.navigationView)
         val accessToken = PluginUtilities.getResourceFromContext(context, "mapbox_access_token")
-        val view = EmbeddedNavigationMapView(
+        val embeddedView = EmbeddedNavigationMapView(
             context,
             activity,
-            binding,
+            navigationView,
             messenger,
             viewId,
             args,
             accessToken
         )
 
-        view.initialize()
+        embeddedView.initialize()
 
         activity.setTheme(R.style.AppTheme)
 
-        return view
+        return embeddedView
     }
 }

@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 35
+    compileSdkVersion 36
     ndkVersion "28.0.12433566"
 
     sourceSets {
@@ -45,10 +45,17 @@ android {
     defaultConfig {
         applicationId "com.eopeter.fluttermapboxnavigationexample"
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+        
+        // Enable 16KB page size support
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+            }
+        }
     }
 
     buildTypes {
@@ -62,6 +69,12 @@ android {
     lint {
         disable 'InvalidPackage'
         checkReleaseBuilds false
+    }
+    
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
     
     namespace 'com.eopeter.fluttermapboxnavigationexample'
