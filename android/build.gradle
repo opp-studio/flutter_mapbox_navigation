@@ -78,6 +78,14 @@ android {
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
         }
+        
+        // 16 KB page size support
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++17"
+                arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+            }
+        }
     }
     
     buildFeatures {
@@ -99,9 +107,23 @@ android {
             useLegacyPackaging = false
             pickFirsts += ['**/libc++_shared.so', '**/libjsc.so']
         }
+        // 16 KB page size support - ensure proper ELF alignment
+        jniLibs {
+            useLegacyPackaging = false
+            pickFirsts += ['**/libc++_shared.so', '**/libjsc.so']
+            excludes += ['META-INF/*.kotlin_module']
+        }
     }
     
     namespace 'com.eopeter.flutter_mapbox_navigation'
+    
+    // 16 KB page size support - CMake configuration
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+            version "3.22.1"
+        }
+    }
 }
 
 dependencies {
