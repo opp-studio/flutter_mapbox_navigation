@@ -24,7 +24,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.9.1'
+        classpath 'com.android.tools.build:gradle:8.5.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -56,7 +56,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 36
-    ndkVersion "27.1.10911223"
+    ndkVersion "27.0.12077973"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -76,16 +76,11 @@ android {
         targetSdkVersion 36
         
         ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+            abiFilters 'arm64-v8a', 'x86_64'  // Only 64-bit architectures for 16KB compliance
         }
         
         // 16 KB page size support - NDK 27 configuration
-        externalNativeBuild {
-            cmake {
-                cppFlags "-std=c++17"
-                arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-            }
-        }
+        // Note: This plugin is Kotlin-only, no native C++ compilation needed
     }
     
     buildFeatures {
@@ -101,28 +96,23 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging = false
-        }
-        // Ensure proper alignment for 16 KB page sizes
-        jniLibs {
-            useLegacyPackaging = false
-            pickFirsts += ['**/libc++_shared.so', '**/libjsc.so']
-        }
-        // 16 KB page size support - ensure proper ELF alignment
-        jniLibs {
-            useLegacyPackaging = false
             pickFirsts += ['**/libc++_shared.so', '**/libjsc.so']
             excludes += ['META-INF/*.kotlin_module']
         }
     }
     
-    namespace 'com.eopeter.flutter_mapbox_navigation'
+    // 16KB page size alignment for all native libraries
+    // Note: This is a library module, not an application
     
-    // 16 KB page size support - CMake configuration
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-            version "3.22.1"
-        }
+    namespace 'com.eopeter.fluttermapboxnavigation'
+    
+    // 16 KB page size support - No native build needed for Kotlin-only plugin
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.mapbox.common:common-ndk27:24.16.0'
+        exclude group: 'com.mapbox.common', module: 'okhttp-ndk27'
     }
 }
 
@@ -130,18 +120,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     
     // Mapbox Navigation SDK and Maps SDK with NDK 27 support for 16 KB page size
-    implementation('com.mapbox.navigation:android-ndk27:2.21.0') {
-        exclude group: 'com.mapbox.common', module: 'okhttp'
-    }
-    implementation('com.mapbox.navigation:ui-dropin-ndk27:2.21.0') {
-        exclude group: 'com.mapbox.common', module: 'okhttp'
-    }
-    implementation('com.mapbox.navigation:ui-maps-ndk27:2.21.0') {
-        exclude group: 'com.mapbox.common', module: 'okhttp'
-    }
-    implementation('com.mapbox.maps:android-ndk27:11.16.0') {
-        exclude group: 'com.mapbox.common', module: 'okhttp'
-    }
+    implementation('com.mapbox.navigation:android-ndk27:2.21.0')
+    implementation('com.mapbox.navigation:ui-dropin-ndk27:2.21.0')
+    implementation('com.mapbox.navigation:ui-maps-ndk27:2.21.0')
+    implementation('com.mapbox.maps:android-ndk27:11.16.0')
     
     // AndroidX dependencies
     implementation 'androidx.core:core-ktx:1.12.0'
