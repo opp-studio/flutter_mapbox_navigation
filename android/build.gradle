@@ -75,11 +75,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 36
         
-        // Enable 16KB page size support
-        externalNativeBuild {
-            cmake {
-                arguments '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
-            }
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
         }
     }
     
@@ -95,7 +92,12 @@ android {
     
     packagingOptions {
         jniLibs {
-            useLegacyPackaging = true
+            useLegacyPackaging = false
+        }
+        // Ensure proper alignment for 16 KB page sizes
+        jniLibs {
+            useLegacyPackaging = false
+            pickFirsts += ['**/libc++_shared.so', '**/libjsc.so']
         }
     }
     
