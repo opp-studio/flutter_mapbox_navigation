@@ -56,7 +56,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 36
-    ndkVersion "27.0.12077973"
+    ndkVersion "27.1.10911223"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -79,7 +79,7 @@ android {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
         }
         
-        // 16 KB page size support
+        // 16 KB page size support - NDK 27 configuration
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"
